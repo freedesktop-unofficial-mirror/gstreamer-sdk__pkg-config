@@ -1,15 +1,18 @@
 #! /bin/sh
 
-# Make sure we're POSIX
-if [ "$PKG_CONFIG_SHELL_IS_POSIX" != "1" ]; then
-    PKG_CONFIG_SHELL_IS_POSIX=1 PATH=`getconf PATH` exec sh $0 "$@"
-fi
-
 set -e
 
 . ${srcdir}/common
 
-ARGS="--define-variable=includedir=/includedir/ --cflags simple"
+case ${MACHTYPE} in
+*-msys)
+    # Make sure path doesn't get mangled on MSYS
+    ARGS="--define-variable=includedir=\\/includedir/ --cflags simple"
+    ;;
+*)
+    ARGS="--define-variable=includedir=/includedir/ --cflags simple"
+    ;;
+esac
 RESULT="-I/includedir/"
 
 run_test

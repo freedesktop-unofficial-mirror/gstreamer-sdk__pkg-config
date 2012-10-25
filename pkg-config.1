@@ -3,32 +3,14 @@
 .\" (C) Red Hat, Inc. based on gnome-config man page (C) Miguel de Icaza (miguel@gnu.org)
 .\"
 .
-.\" Macros to disable groff line adjustment warnings that we can't easily
-.\" fix in the text.
-.ie \n(.g \{\
-.  de DW
-.    nr .oldwarn \n[.warn]
-.    warn 0
-.  .
-.  de EW
-.    warn \n[.oldwarn]
-.  .
-.\}
-.el \
-.\{ \
-.  de DW
-.  .
-.  de EW
-.  .
-.\}
-.
 .TH pkg-config 1
 .SH NAME
 pkg-config \- Return metainformation about installed libraries
 .SH SYNOPSIS
 .PP
 .B pkg-config
-[\-\-modversion] [\-\-help] [\-\-print-errors] [\-\-silence-errors] 
+[\-\-modversion] [\-\-version] [\-\-help] [\-\-print-errors]
+[\-\-silence-errors] [\-\-errors-to-stdout] [\-\-debug]
 [\-\-cflags] [\-\-libs] [\-\-libs-only-L]
 [\-\-libs-only-l] [\-\-cflags-only-I]
 [\-\-variable=VARIABLENAME]
@@ -84,6 +66,11 @@ exits successfully. If one or more libraries is unknown,
 .I pkg-config
 exits with a nonzero code, and the contents of stdout are undefined.
 .TP
+.I "--version"
+Displays the version of
+.I pkg-config
+and terminates.
+.TP
 .I "--help"
 Displays a help message and terminates.
 .TP
@@ -112,6 +99,11 @@ environment variable overrides this option.
 .TP
 .I "--errors-to-stdout"
 If printing errors, print them to stdout rather than the default stderr
+.TP
+.I "--debug"
+Print debugging information. This is slightly different than the
+PKG_CONFIG_DEBUG_SPEW environment variable, which also enable
+"--print-errors".
 
 .PP
 The following options are used to compile and link programs:
@@ -288,7 +280,9 @@ equal to /var/target (same rule apply to -L)
 Replaces the default \fIpkg-config\fP search directory, usually \fI/usr/lib/pkgconfig\fP
 .\"
 .SH QUERYING PKG-CONFIG'S DEFAULTS
-.I pkg-config\fP can be used to query itself for the default search path, version number and other information, for instance using:
+.I pkg-config
+can be used to query itself for the default search path, version number
+and other information, for instance using:
 .nf
   $ pkg-config --variable pc_path pkg-config
 .fi
@@ -329,6 +323,11 @@ use to display what went wrong.
 Note that if there is a possibility the first call to
 PKG_CHECK_MODULES might not happen, you should be sure to include an
 explicit call to PKG_PROG_PKG_CONFIG in your configure.ac.
+
+Also note that repeated usage of VARIABLE-PREFIX is not recommended.
+After the first successful usage, subsequent calls with the same
+VARIABLE-PREFIX will simply use the _LIBS and _CFLAGS variables set from
+the previous usage without calling \fIpkg-config\fP again.
 .\"
 .TP
 .I "PKG_PROG_PKG_CONFIG([MIN-VERSION])"

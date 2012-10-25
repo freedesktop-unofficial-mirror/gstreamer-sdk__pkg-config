@@ -25,14 +25,6 @@
 #include "pkg.h"
 #include "parse.h"
 
-#ifdef HAVE_ALLOCA_H
-# include <alloca.h>
-#else
-# ifdef _AIX
-#  pragma alloca
-# endif
-#endif
-
 #ifdef HAVE_MALLOC_H
 # include <malloc.h>
 #endif
@@ -153,7 +145,7 @@ scan_dir (const char *dirname)
     {
       gchar *p;
       /* Turn backslashes into slashes or
-       * poptParseArgvString() will eat them when ${prefix}
+       * g_shell_parse_argv() will eat them when ${prefix}
        * has been expanded in parse_libs().
        */
       p = dirname;
@@ -240,7 +232,7 @@ add_virtual_pkgconfig_package (void)
 
   if (pkg->vars == NULL)
     pkg->vars = g_hash_table_new (g_str_hash, g_str_equal);
-  g_hash_table_insert (pkg->vars, "pc_path", PKG_CONFIG_PC_PATH);
+  g_hash_table_insert (pkg->vars, "pc_path", pkg_config_pc_path);
 
   debug_spew ("Adding virtual 'pkg-config' package to list of known packages\n");
   g_hash_table_insert (packages, pkg->key, pkg);
@@ -1276,8 +1268,8 @@ static int rpmvercmp(const char * a, const char * b) {
     /* easy comparison to see if versions are identical */
     if (!strcmp(a, b)) return 0;
 
-    str1 = alloca(strlen(a) + 1);
-    str2 = alloca(strlen(b) + 1);
+    str1 = g_alloca(strlen(a) + 1);
+    str2 = g_alloca(strlen(b) + 1);
 
     strcpy(str1, a);
     strcpy(str2, b);
